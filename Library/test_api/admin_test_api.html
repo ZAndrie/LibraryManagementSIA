@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Testing Interface - For Development Only</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .dev-warning {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .dev-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .test-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-card .method {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        .method.get {
+            background: #28a745;
+            color: white;
+        }
+        .method.post {
+            background: #007bff;
+            color: white;
+        }
+        .test-card p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-bottom: 15px;
+            word-break: break-all;
+            border-left: 3px solid #667eea;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .result-box.show {
+            display: block;
+        }
+        .result-box.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result-box.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .result-box pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .stats-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .stat-item .number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-item .label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Development Warning -->
+    <div class="dev-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>DEVELOPMENT TOOL ONLY</strong> - This page is for testing purposes and should not be part of the production system
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-flask"></i>
+                API Testing Interface
+                <span class="dev-badge">DEV ONLY</span>
+            </h1>
+            <p><i class="fas fa-info-circle"></i> Test all API endpoints for the Library Management System - For Development Use Only</p>
+        </div>
+
+        <!-- Statistics Bar -->
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item">
+                <div class="number" id="statTotalBooks">-</div>
+                <div class="label"><i class="fas fa-book"></i> Total Books</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="statAvailable">-</div>
+                <div class="label"><i class="fas fa-check-circle"></i> Available Copies</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="statCategories">-</div>
+                <div class="label"><i class="fas fa-tags"></i> Categories</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="statUtilization">-</div>
+                <div class="label"><i class="fas fa-chart-line"></i> Utilization</div>
+            </div>
+        </div>
+
+        <!-- Test Cards Grid -->
+        <div class="test-grid">
+            
+            <!-- Test 1: Get All Books -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-books"></i>
+                    Get All Books
+                    <span class="method get">GET</span>
+                </h3>
+                <p>Retrieve all books with pagination support</p>
+                <div class="endpoint">
+                    ../api/index.php?module=books&action=get_all_books
+                </div>
+                <button class="btn btn-primary" onclick="testGetAllBooks()">
+                    <i class="fas fa-play"></i> Test Endpoint
+                </button>
+                <div id="result-get-all-books" class="result-box"></div>
+            </div>
+
+            <!-- Test 2: Search Books -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-search"></i>
+                    Search Books
+                    <span class="method get">GET</span>
+                </h3>
+                <p>Search books by title, author, ISBN, or category</p>
+                <div class="input-group">
+                    <label><i class="fas fa-keyboard"></i> Search Query:</label>
+                    <input type="text" id="searchQuery" placeholder="e.g., Harry Potter" value="Harry">
+                </div>
+                <button class="btn btn-primary" onclick="testSearch()">
+                    <i class="fas fa-play"></i> Test Search
+                </button>
+                <div id="result-search" class="result-box"></div>
+            </div>
+
+            <!-- Test 3: Get Categories -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-tags"></i>
+                    Get Categories
+                    <span class="method get">GET</span>
+                </h3>
+                <p>Retrieve all unique book categories</p>
+                <div class="endpoint">
+                    ../api/index.php?module=books&action=get_categories
+                </div>
+                <button class="btn btn-primary" onclick="testGetCategories()">
+                    <i class="fas fa-play"></i> Test Endpoint
+                </button>
+                <div id="result-categories" class="result-box"></div>
+            </div>
+
+            <!-- Test 4: Get Statistics -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-chart-bar"></i>
+                    Get Statistics
+                    <span class="method get">GET</span>
+                </h3>
+                <p>Retrieve library statistics and metrics</p>
+                <div class="endpoint">
+                    ../api/index.php?module=books&action=get_stats
+                </div>
+                <button class="btn btn-primary" onclick="testGetStats()">
+                    <i class="fas fa-play"></i> Test Endpoint
+                </button>
+                <div id="result-stats" class="result-box"></div>
+            </div>
+
+            <!-- Test 5: Get Single Book -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-book"></i>
+                    Get Single Book
+                    <span class="method get">GET</span>
+                </h3>
+                <p>Retrieve details of a specific book by ID</p>
+                <div class="input-group">
+                    <label><i class="fas fa-hashtag"></i> Book ID:</label>
+                    <input type="number" id="bookId" placeholder="e.g., 1" value="1">
+                </div>
+                <button class="btn btn-primary" onclick="testGetBook()">
+                    <i class="fas fa-play"></i> Test Endpoint
+                </button>
+                <div id="result-get-book" class="result-box"></div>
+            </div>
+
+            <!-- Test 6: Check Availability -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-check-circle"></i>
+                    Check Availability
+                    <span class="method get">GET</span>
+                </h3>
+                <p>Check if a specific book is available</p>
+                <div class="input-group">
+                    <label><i class="fas fa-hashtag"></i> Book ID:</label>
+                    <input type="number" id="availabilityId" placeholder="e.g., 1" value="1">
+                </div>
+                <button class="btn btn-primary" onclick="testCheckAvailability()">
+                    <i class="fas fa-play"></i> Test Endpoint
+                </button>
+                <div id="result-availability" class="result-box"></div>
+            </div>
+
+            <!-- Test 7: Advanced Search -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-sliders-h"></i>
+                    Advanced Search
+                    <span class="method get">GET</span>
+                </h3>
+                <p>Search with multiple filters (title, author, category)</p>
+                <div class="input-group">
+                    <label><i class="fas fa-book"></i> Title:</label>
+                    <input type="text" id="advTitle" placeholder="Book title">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-user"></i> Author:</label>
+                    <input type="text" id="advAuthor" placeholder="Author name">
+                </div>
+                <button class="btn btn-primary" onclick="testAdvancedSearch()">
+                    <i class="fas fa-play"></i> Test Search
+                </button>
+                <div id="result-advanced" class="result-box"></div>
+            </div>
+
+            <!-- Test 8: Delete Book (POST) -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-trash-alt"></i>
+                    Delete Book
+                    <span class="method post">POST</span>
+                </h3>
+                <p>Delete a book from the database (use with caution!)</p>
+                <div class="input-group">
+                    <label><i class="fas fa-hashtag"></i> Book ID to Delete:</label>
+                    <input type="number" id="deleteId" placeholder="e.g., 999">
+                </div>
+                <button class="btn btn-danger" onclick="testDeleteBook()">
+                    <i class="fas fa-exclamation-triangle"></i> Test Delete
+                </button>
+                <div id="result-delete" class="result-box"></div>
+            </div>
+
+        </div>
+
+        <!-- Run All Tests Button -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-success" onclick="runAllTests()" style="font-size: 16px; padding: 15px 30px;">
+                <i class="fas fa-bolt"></i> Run All Tests
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '../api/index.php?module=books';
+
+        // Helper function to display results
+        function showResult(elementId, success, data) {
+            const resultBox = document.getElementById(elementId);
+            resultBox.className = `result-box show ${success ? 'success' : 'error'}`;
+            resultBox.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+
+        // Test 1: Get All Books
+        async function testGetAllBooks() {
+            try {
+                const response = await fetch(`${API_BASE}&action=get_all_books`);
+                const data = await response.json();
+                showResult('result-get-all-books', data.success, data);
+            } catch (error) {
+                showResult('result-get-all-books', false, { error: error.message });
+            }
+        }
+
+        // Test 2: Search Books
+        async function testSearch() {
+            const query = document.getElementById('searchQuery').value;
+            try {
+                const response = await fetch(`${API_BASE}&action=search&search=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                showResult('result-search', data.success, data);
+            } catch (error) {
+                showResult('result-search', false, { error: error.message });
+            }
+        }
+
+        // Test 3: Get Categories
+        async function testGetCategories() {
+            try {
+                const response = await fetch(`${API_BASE}&action=get_categories`);
+                const data = await response.json();
+                showResult('result-categories', data.success, data);
+            } catch (error) {
+                showResult('result-categories', false, { error: error.message });
+            }
+        }
+
+        // Test 4: Get Statistics
+        async function testGetStats() {
+            try {
+                const response = await fetch(`${API_BASE}&action=get_stats`);
+                const data = await response.json();
+                showResult('result-stats', data.success, data);
+                
+                if (data.success) {
+                    updateStatsBar(data.data);
+                }
+            } catch (error) {
+                showResult('result-stats', false, { error: error.message });
+            }
+        }
+
+        // Test 5: Get Single Book
+        async function testGetBook() {
+            const id = document.getElementById('bookId').value;
+            try {
+                const response = await fetch(`${API_BASE}&action=get_book&id=${id}`);
+                const data = await response.json();
+                showResult('result-get-book', data.success, data);
+            } catch (error) {
+                showResult('result-get-book', false, { error: error.message });
+            }
+        }
+
+        // Test 6: Check Availability
+        async function testCheckAvailability() {
+            const id = document.getElementById('availabilityId').value;
+            try {
+                const response = await fetch(`${API_BASE}&action=check_availability&id=${id}`);
+                const data = await response.json();
+                showResult('result-availability', data.success, data);
+            } catch (error) {
+                showResult('result-availability', false, { error: error.message });
+            }
+        }
+
+        // Test 7: Advanced Search
+        async function testAdvancedSearch() {
+            const title = document.getElementById('advTitle').value;
+            const author = document.getElementById('advAuthor').value;
+            
+            let url = `${API_BASE}&action=search`;
+            if (title) url += `&title=${encodeURIComponent(title)}`;
+            if (author) url += `&author=${encodeURIComponent(author)}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                showResult('result-advanced', data.success, data);
+            } catch (error) {
+                showResult('result-advanced', false, { error: error.message });
+            }
+        }
+
+        // Test 8: Delete Book
+        async function testDeleteBook() {
+            const id = document.getElementById('deleteId').value;
+            
+            if (!id) {
+                alert('Please enter a book ID to delete');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to test DELETE on book ID ${id}?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}&action=delete_book`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: parseInt(id) })
+                });
+                const data = await response.json();
+                showResult('result-delete', data.success, data);
+            } catch (error) {
+                showResult('result-delete', false, { error: error.message });
+            }
+        }
+
+        // Update Statistics Bar
+        function updateStatsBar(stats) {
+            document.getElementById('statTotalBooks').textContent = stats.total_books;
+            document.getElementById('statAvailable').textContent = stats.available_copies;
+            document.getElementById('statCategories').textContent = stats.categories_count;
+            document.getElementById('statUtilization').textContent = stats.utilization_rate + '%';
+            document.getElementById('statsBar').style.display = 'grid';
+        }
+
+        // Run all tests sequentially
+        async function runAllTests() {
+            console.log('Running all tests...');
+            
+            await testGetAllBooks();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testSearch();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testGetCategories();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testGetStats();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testGetBook();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testCheckAvailability();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testAdvancedSearch();
+            
+            alert('All tests completed! Check the results below each test card.');
+        }
+
+        // Auto-load stats on page load
+        window.addEventListener('load', () => {
+            testGetStats();
+        });
+    </script>
+</body>
+</html>

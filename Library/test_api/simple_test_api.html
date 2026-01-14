@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple API Test - Library System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .test-box h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .result.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .result pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        .status.testing {
+            background: #ffc107;
+            color: black;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Simple API Test</h1>
+            <p>Click each button to test the API endpoints</p>
+        </div>
+
+        <!-- Test 1: Search All Books -->
+        <div class="test-box">
+            <h2>Test 1: Search All Books</h2>
+            <p style="color: #666; margin-bottom: 15px;">Tests if API can retrieve all books from database</p>
+            <button class="btn" onclick="testSearchAll()">🔍 Test Search All Books</button>
+            <div id="result1" class="result"></div>
+        </div>
+
+        <!-- Test 2: Search by Query -->
+        <div class="test-box">
+            <h2>Test 2: Search with Query</h2>
+            <p style="color: #666; margin-bottom: 15px;">Tests if API can search for specific books</p>
+            <div class="input-group">
+                <input type="text" id="searchQuery" placeholder="Enter search term (e.g., Harry, Potter, Fiction)" value="Harry">
+            </div>
+            <button class="btn" onclick="testSearchQuery()">🔍 Test Search Query</button>
+            <div id="result2" class="result"></div>
+        </div>
+
+        <!-- Test 3: Get Single Book -->
+        <div class="test-box">
+            <h2>Test 3: Get Single Book by ID</h2>
+            <p style="color: #666; margin-bottom: 15px;">Tests if API can retrieve one specific book</p>
+            <div class="input-group">
+                <input type="number" id="bookId" placeholder="Enter Book ID" value="1" min="1">
+            </div>
+            <button class="btn" onclick="testGetBook()">📖 Test Get Book</button>
+            <div id="result3" class="result"></div>
+        </div>
+
+        <!-- Test 4: Get Categories -->
+        <div class="test-box">
+            <h2>Test 4: Get All Categories</h2>
+            <p style="color: #666; margin-bottom: 15px;">Tests if API can retrieve all book categories</p>
+            <button class="btn" onclick="testGetCategories()">🏷️ Test Get Categories</button>
+            <div id="result4" class="result"></div>
+        </div>
+
+        <!-- Test 5: Check Availability -->
+        <div class="test-box">
+            <h2>Test 5: Check Book Availability</h2>
+            <p style="color: #666; margin-bottom: 15px;">Tests if API can check if a book is available</p>
+            <div class="input-group">
+                <input type="number" id="availId" placeholder="Enter Book ID" value="1" min="1">
+            </div>
+            <button class="btn" onclick="testCheckAvailability()">✅ Test Check Availability</button>
+            <div id="result5" class="result"></div>
+        </div>
+
+        <!-- Summary -->
+        <div class="test-box" style="background: #f8f9fa;">
+            <h2>📊 Test Summary</h2>
+            <div id="summary" style="color: #666;">
+                Click the buttons above to test each API endpoint
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let passedTests = 0;
+        let totalTests = 0;
+
+        // Test 1: Search All Books
+        async function testSearchAll() {
+            totalTests++;
+            const resultDiv = document.getElementById('result1');
+            resultDiv.innerHTML = '<span class="status testing">⏳ Testing...</span>';
+            resultDiv.className = 'result show';
+
+            try {
+                const response = await fetch('../api/index.php?module=books&action=search&search=');
+                const data = await response.json();
+
+                if (data.success) {
+                    passedTests++;
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ PASSED</span>
+                        <p><strong>Success!</strong> Found ${data.count} books in database</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p><strong>Error:</strong> ${data.message}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ FAILED</span>
+                    <p><strong>Connection Error:</strong> ${error.message}</p>
+                    <p>Make sure your server is running and the API file exists.</p>
+                `;
+            }
+            updateSummary();
+        }
+
+        // Test 2: Search by Query
+        async function testSearchQuery() {
+            totalTests++;
+            const query = document.getElementById('searchQuery').value;
+            const resultDiv = document.getElementById('result2');
+            resultDiv.innerHTML = '<span class="status testing">⏳ Testing...</span>';
+            resultDiv.className = 'result show';
+
+            try {
+                const response = await fetch(`../api/index.php?module=books&action=search&search=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    passedTests++;
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ PASSED</span>
+                        <p><strong>Success!</strong> Found ${data.count} book(s) matching "${query}"</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p><strong>Error:</strong> ${data.message}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ FAILED</span>
+                    <p><strong>Connection Error:</strong> ${error.message}</p>
+                `;
+            }
+            updateSummary();
+        }
+
+        // Test 3: Get Single Book
+        async function testGetBook() {
+            totalTests++;
+            const bookId = document.getElementById('bookId').value;
+            const resultDiv = document.getElementById('result3');
+            resultDiv.innerHTML = '<span class="status testing">⏳ Testing...</span>';
+            resultDiv.className = 'result show';
+
+            try {
+                const response = await fetch(`../api/index.php?module=books&action=get_book&id=${bookId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    passedTests++;
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ PASSED</span>
+                        <p><strong>Success!</strong> Retrieved book: ${data.data.title || 'Unknown'}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p><strong>Error:</strong> ${data.message}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ FAILED</span>
+                    <p><strong>Connection Error:</strong> ${error.message}</p>
+                `;
+            }
+            updateSummary();
+        }
+
+        // Test 4: Get Categories
+        async function testGetCategories() {
+            totalTests++;
+            const resultDiv = document.getElementById('result4');
+            resultDiv.innerHTML = '<span class="status testing">⏳ Testing...</span>';
+            resultDiv.className = 'result show';
+
+            try {
+                const response = await fetch('../api/index.php?module=books&action=get_categories');
+                const data = await response.json();
+
+                if (data.success) {
+                    passedTests++;
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ PASSED</span>
+                        <p><strong>Success!</strong> Found ${data.count} categories</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p><strong>Error:</strong> ${data.message}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ FAILED</span>
+                    <p><strong>Connection Error:</strong> ${error.message}</p>
+                `;
+            }
+            updateSummary();
+        }
+
+        // Test 5: Check Availability
+        async function testCheckAvailability() {
+            totalTests++;
+            const availId = document.getElementById('availId').value;
+            const resultDiv = document.getElementById('result5');
+            resultDiv.innerHTML = '<span class="status testing">⏳ Testing...</span>';
+            resultDiv.className = 'result show';
+
+            try {
+                const response = await fetch(`../api/index.php?module=books&action=check_availability&id=${availId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    passedTests++;
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ PASSED</span>
+                        <p><strong>Success!</strong> Book "${data.data.title}" has ${data.data.available} copies available</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p><strong>Error:</strong> ${data.message}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ FAILED</span>
+                    <p><strong>Connection Error:</strong> ${error.message}</p>
+                `;
+            }
+            updateSummary();
+        }
+
+        // Update Summary
+        function updateSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const percentage = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
+            
+            let summaryHTML = `
+                <p style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">
+                    Tests Passed: ${passedTests} / ${totalTests} (${percentage}%)
+                </p>
+            `;
+
+            if (percentage === 100 && totalTests >= 5) {
+                summaryHTML += `
+                    <p style="color: #28a745; font-weight: bold; font-size: 16px;">
+                        🎉 ALL TESTS PASSED! Your API is working perfectly!
+                    </p>
+                `;
+            } else if (totalTests >= 5) {
+                summaryHTML += `
+                    <p style="color: #dc3545; font-weight: bold;">
+                        ⚠️ Some tests failed. Check the errors above.
+                    </p>
+                `;
+            }
+
+            summaryDiv.innerHTML = summaryHTML;
+        }
+    </script>
+</body>
+</html>

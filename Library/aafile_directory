@@ -1,0 +1,47 @@
+Account use
+Z Gsuite: API Implementation
+DYWD: Fines & Settings Feature
+Z Personal:
+Gen Gsuite: Settings Feature Integration
+
+
+
+
+library_system/
+│
+├── config/
+│   └── config.php
+│
+├── includes/
+│   └── functions.php
+│
+├── auth/
+│   ├── login.php
+│   ├── logout.php
+│   ├── check_auth.php
+│   ├── forgot_password.php
+│   └── reset_password.php
+│
+├── admin/
+│   ├── dashboard.php
+│   ├── books.php
+│   ├── add_book.php
+│   ├── edit_book.php
+│   ├── patrons.php
+│   ├── add_patron.php
+│   ├── edit_patron.php
+│   ├── users.php
+│   ├── add_user.php
+│   ├── edit_user.php
+│   ├── borrowing.php
+│   ├── inventory.php
+│   ├── activity_logs.php
+│   ├── login_history.php
+│   └── active_sessions.php
+│
+├── client/
+│   ├── dashboard.php
+│   └── search_books.php
+│
+├── index.php
+└── database_setup.sql

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Testing - Library System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .test-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .test-controls input,
+        .test-controls select {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .response-box {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .endpoint-info {
+            background: #e7f3ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #004085;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .card p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔌 Library System API Testing</h1>
+            <p>Test all API endpoints to verify UI/UX → API → DATABASE → API → OUTPUT architecture</p>
+        </div>
+
+        <!-- Test 1: Search Books -->
+        <div class="test-section">
+            <h2>1. Search Books API</h2>
+            <div class="endpoint-info">
+                GET ../api/index.php?module=books&action=search&search={query}
+            </div>
+            <div class="test-controls">
+                <input type="text" id="searchQuery" placeholder="Search by title, author, or category..." value="Harry">
+                <button class="btn" onclick="testSearch()">🔍 Test Search</button>
+            </div>
+            <div id="searchStatus" class="status pending">Ready to test</div>
+            <div id="searchResponse" class="response-box">Response will appear here...</div>
+        </div>
+
+        <!-- Test 2: Advanced Search -->
+        <div class="test-section">
+            <h2>2. Advanced Search API</h2>
+            <div class="endpoint-info">
+                GET ../api/index.php?module=books&action=search&title={title}&author={author}&category={category}
+            </div>
+            <div class="test-controls">
+                <input type="text" id="advTitle" placeholder="Title">
+                <input type="text" id="advAuthor" placeholder="Author">
+                <input type="text" id="advCategory" placeholder="Category">
+                <button class="btn" onclick="testAdvancedSearch()">🔍 Test Advanced Search</button>
+            </div>
+            <div id="advSearchStatus" class="status pending">Ready to test</div>
+            <div id="advSearchResponse" class="response-box">Response will appear here...</div>
+        </div>
+
+        <!-- Test 3: Get Single Book -->
+        <div class="test-section">
+            <h2>3. Get Single Book API</h2>
+            <div class="endpoint-info">
+                GET ../api/index.php?module=books&action=get_book&id={id}
+            </div>
+            <div class="test-controls">
+                <input type="number" id="bookId" placeholder="Enter Book ID" value="1">
+                <button class="btn" onclick="testGetBook()">📖 Test Get Book</button>
+            </div>
+            <div id="getBookStatus" class="status pending">Ready to test</div>
+            <div id="getBookResponse" class="response-box">Response will appear here...</div>
+        </div>
+
+        <!-- Test 4: Get Categories -->
+        <div class="test-section">
+            <h2>4. Get Categories API</h2>
+            <div class="endpoint-info">
+                GET ../api/index.php?module=books&action=get_categories
+            </div>
+            <div class="test-controls">
+                <button class="btn" onclick="testGetCategories()">🏷️ Test Get Categories</button>
+            </div>
+            <div id="getCategoriesStatus" class="status pending">Ready to test</div>
+            <div id="getCategoriesResponse" class="response-box">Response will appear here...</div>
+        </div>
+
+        <!-- Test 5: Check Availability -->
+        <div class="test-section">
+            <h2>5. Check Availability API</h2>
+            <div class="endpoint-info">
+                GET ../api/index.php?module=books&action=check_availability&id={id}
+            </div>
+            <div class="test-controls">
+                <input type="number" id="availabilityId" placeholder="Enter Book ID" value="1">
+                <button class="btn" onclick="testCheckAvailability()">✅ Test Check Availability</button>
+            </div>
+            <div id="availabilityStatus" class="status pending">Ready to test</div>
+            <div id="availabilityResponse" class="response-box">Response will appear here...</div>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="test-section">
+            <h2>📊 API Architecture Flow</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; font-family: monospace;">
+                <div style="margin: 10px 0;">
+                    <strong>UI/UX</strong> (test_api.html / search_books.php)
+                    <br>↓ AJAX Request
+                </div>
+                <div style="margin: 10px 0; background: #667eea; color: white; padding: 10px; border-radius: 5px;">
+                    <strong>API Layer 1</strong> (api_books.php - Receives Request)
+                    <br>↓ Query
+                </div>
+                <div style="margin: 10px 0;">
+                    <strong>DATABASE</strong> (MySQL)
+                    <br>↓ Results
+                </div>
+                <div style="margin: 10px 0; background: #667eea; color: white; padding: 10px; border-radius: 5px;">
+                    <strong>API Layer 2</strong> (api_books.php - Format JSON)
+                    <br>↓ JSON Response
+                </div>
+                <div style="margin: 10px 0;">
+                    <strong>OUTPUT</strong> (Display Results)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test 1: Search Books
+        async function testSearch() {
+            const query = document.getElementById('searchQuery').value;
+            const statusEl = document.getElementById('searchStatus');
+            const responseEl = document.getElementById('searchResponse');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = '⏳ Testing...';
+            responseEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`../api/index.php?module=books&action=search&search=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Success - Found ' + data.count + ' books';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Error: ' + data.message;
+                }
+                
+                responseEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Request Failed';
+                responseEl.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Test 2: Advanced Search
+        async function testAdvancedSearch() {
+            const title = document.getElementById('advTitle').value;
+            const author = document.getElementById('advAuthor').value;
+            const category = document.getElementById('advCategory').value;
+            
+            const statusEl = document.getElementById('advSearchStatus');
+            const responseEl = document.getElementById('advSearchResponse');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = '⏳ Testing...';
+            responseEl.textContent = 'Loading...';
+            
+            let url = '../api/index.php?module=books&action=search';
+            if (title) url += '&title=' + encodeURIComponent(title);
+            if (author) url += '&author=' + encodeURIComponent(author);
+            if (category) url += '&category=' + encodeURIComponent(category);
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Success - Found ' + data.count + ' books';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Error: ' + data.message;
+                }
+                
+                responseEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Request Failed';
+                responseEl.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Test 3: Get Single Book
+        async function testGetBook() {
+            const id = document.getElementById('bookId').value;
+            const statusEl = document.getElementById('getBookStatus');
+            const responseEl = document.getElementById('getBookResponse');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = '⏳ Testing...';
+            responseEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`../api/index.php?module=books&action=get_book&id=${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Success - Book Found';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Error: ' + data.message;
+                }
+                
+                responseEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Request Failed';
+                responseEl.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Test 4: Get Categories
+        async function testGetCategories() {
+            const statusEl = document.getElementById('getCategoriesStatus');
+            const responseEl = document.getElementById('getCategoriesResponse');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = '⏳ Testing...';
+            responseEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('../api/index.php?module=books&action=get_categories');
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Success - Found ' + data.count + ' categories';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Error: ' + data.message;
+                }
+                
+                responseEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Request Failed';
+                responseEl.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Test 5: Check Availability
+        async function testCheckAvailability() {
+            const id = document.getElementById('availabilityId').value;
+            const statusEl = document.getElementById('availabilityStatus');
+            const responseEl = document.getElementById('availabilityResponse');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = '⏳ Testing...';
+            responseEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`../api/index.php?module=books&action=check_availability&id=${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Success - Availability Checked';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Error: ' + data.message;
+                }
+                
+                responseEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Request Failed';
+                responseEl.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

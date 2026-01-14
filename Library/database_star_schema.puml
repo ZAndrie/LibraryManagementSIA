@@ -1,0 +1,80 @@
+@startuml
+' Star schema for Library analytics
+' Fact table in center with date role-playing dims
+
+skinparam handwritten false
+skinparam shadowing false
+
+entity "Fact: fact_borrowings" as FB {
+  * borrowing_key : INT <<PK>>
+  --
+  borrowing_id : INT
+  borrow_date_id : INT <<FK>>
+  due_date_id : INT <<FK>>
+  return_date_id : INT <<FK>>
+  book_key : INT <<FK>>
+  patron_key : INT <<FK>>
+  user_key : INT <<FK>>
+  status : VARCHAR
+  fine_amount : DECIMAL
+  days_overdue : INT
+  days_borrowed : INT
+  created_at : DATETIME
+}
+
+entity "Dim: dim_date" as DDate {
+  * date_id : INT <<PK>>
+  date : DATE
+  year : INT
+  quarter : INT
+  month : INT
+  day : INT
+  weekday : VARCHAR
+}
+
+entity "Dim: dim_book" as DBook {
+  * book_key : INT <<PK>>
+  book_id : INT
+  title : VARCHAR
+  author : VARCHAR
+  isbn : VARCHAR
+  publisher : VARCHAR
+  published_year : INT
+  category : VARCHAR
+  copies_total : INT
+  copies_available : INT
+}
+
+entity "Dim: dim_patron" as DPatron {
+  * patron_key : INT <<PK>>
+  patron_id : INT
+  patron_type : VARCHAR
+  full_name : VARCHAR
+  email : VARCHAR
+  department : VARCHAR
+  registered_date : DATE
+}
+
+entity "Dim: dim_user" as DUser {
+  * user_key : INT <<PK>>
+  user_id : INT
+  username : VARCHAR
+  full_name : VARCHAR
+  role : VARCHAR
+}
+
+' Relationships (date role-playing)
+DDate ||--o{ FB : "borrow_date_id"
+DDate ||--o{ FB : "due_date_id"
+DDate ||--o{ FB : "return_date_id"
+
+DBook ||--o{ FB : "book_key"
+DPatron ||--o{ FB : "patron_key"
+DUser ||--o{ FB : "user_key"
+
+note left of FB
+  Fact records each borrowing event.
+  Dates are role-playing dimensions (borrow/due/return).
+end note
+
+@enduml
